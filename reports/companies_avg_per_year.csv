@@ -1,0 +1,11 @@
+company_id,company,years_active,total_patents,avg_patents_per_year
+CMP000000,Sony Group,5,5672,1134.4
+CMP000001,Amazon LLC,5,3400,680.0
+CMP000002,Samsung Innovations,5,2528,505.6
+CMP000003,Roche Systems,5,2278,455.6
+CMP000004,Qualcomm,5,1797,359.4
+CMP000005,HydroMeta Ltd,5,1662,332.4
+CMP000006,Meta Platforms,5,1478,295.6
+CMP000007,Johnson AG,5,1337,267.4
+CMP000008,NanoMicrosoft Corp,5,1240,248.0
+CMP000009,Ford AG,5,1137,227.4

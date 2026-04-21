@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Data (too big / reproducible)
+data/raw/
+*.db
+*.sqlite
+*.sqlite3
+
+# Generated outputs can be regenerated, but we KEEP them committed as proof
+# Comment the two lines below if you want a fully clean repo
+# data/processed/
+# reports/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# OS
+Thumbs.db

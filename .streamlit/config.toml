@@ -1,0 +1,17 @@
+# Streamlit theme for the Patent Intelligence dashboard.
+# Keeps the look consistent with src/config.py::BRAND.
+
+[theme]
+base               = "light"
+primaryColor       = "#0B5FFF"
+backgroundColor    = "#FFFFFF"
+secondaryBackgroundColor = "#F6F8FB"
+textColor          = "#0E1F3A"
+font               = "sans serif"
+
+[server]
+headless           = true
+enableXsrfProtection = true
+
+[browser]
+gatherUsageStats   = false

@@ -1,0 +1,197 @@
+{
+  "generated_at": "2026-04-21T10:33:33+00:00",
+  "total_patents": 100000,
+  "top_inventors": [
+    {
+      "name": "Andre Davis",
+      "country": "US",
+      "patents": 8352
+    },
+    {
+      "name": "Yuki Chen",
+      "country": "GB",
+      "patents": 5083
+    },
+    {
+      "name": "Robert Miller",
+      "country": "US",
+      "patents": 3561
+    },
+    {
+      "name": "Kenji Garcia",
+      "country": "RO",
+      "patents": 2891
+    },
+    {
+      "name": "Greta Williams",
+      "country": "US",
+      "patents": 2382
+    },
+    {
+      "name": "Emma Martin",
+      "country": "DE",
+      "patents": 2040
+    },
+    {
+      "name": "Ivan Demir",
+      "country": "US",
+      "patents": 1783
+    },
+    {
+      "name": "Akira Moore",
+      "country": "US",
+      "patents": 1651
+    },
+    {
+      "name": "Beatriz Novak",
+      "country": "CA",
+      "patents": 1474
+    },
+    {
+      "name": "Thomas Schneider",
+      "country": "IT",
+      "patents": 1418
+    }
+  ],
+  "top_companies": [
+    {
+      "name": "Sony Group",
+      "patents": 5672
+    },
+    {
+      "name": "Amazon LLC",
+      "patents": 3400
+    },
+    {
+      "name": "Samsung Innovations",
+      "patents": 2528
+    },
+    {
+      "name": "Roche Systems",
+      "patents": 2278
+    },
+    {
+      "name": "Qualcomm",
+      "patents": 1797
+    },
+    {
+      "name": "HydroMeta Ltd",
+      "patents": 1662
+    },
+    {
+      "name": "Meta Platforms",
+      "patents": 1478
+    },
+    {
+      "name": "Johnson AG",
+      "patents": 1337
+    },
+    {
+      "name": "NanoMicrosoft Corp",
+      "patents": 1240
+    },
+    {
+      "name": "Ford AG",
+      "patents": 1137
+    }
+  ],
+  "top_countries": [
+    {
+      "country": "US",
+      "patents": 52033,
+      "share": 0.3447
+    },
+    {
+      "country": "DE",
+      "patents": 19371,
+      "share": 0.1283
+    },
+    {
+      "country": "FR",
+      "patents": 17265,
+      "share": 0.1144
+    },
+    {
+      "country": "GB",
+      "patents": 15106,
+      "share": 0.1001
+    },
+    {
+      "country": "IT",
+      "patents": 9223,
+      "share": 0.0611
+    },
+    {
+      "country": "CA",
+      "patents": 5753,
+      "share": 0.0381
+    },
+    {
+      "country": "IN",
+      "patents": 4707,
+      "share": 0.0312
+    },
+    {
+      "country": "CH",
+      "patents": 4697,
+      "share": 0.0311
+    },
+    {
+      "country": "BE",
+      "patents": 3907,
+      "share": 0.0259
+    },
+    {
+      "country": "CN",
+      "patents": 3844,
+      "share": 0.0255
+    },
+    {
+      "country": "AT",
+      "patents": 3372,
+      "share": 0.0223
+    },
+    {
+      "country": "NL",
+      "patents": 3188,
+      "share": 0.0211
+    },
+    {
+      "country": "RO",
+      "patents": 3063,
+      "share": 0.0203
+    },
+    {
+      "country": "BR",
+      "patents": 2860,
+      "share": 0.0189
+    },
+    {
+      "country": "AU",
+      "patents": 2580,
+      "share": 0.0171
+    }
+  ],
+  "patents_per_year": [
+    {
+      "year": 2020,
+      "patents": 20000
+    },
+    {
+      "year": 2021,
+      "patents": 20000
+    },
+    {
+      "year": 2022,
+      "patents": 20000
+    },
+    {
+      "year": 2023,
+      "patents": 20000
+    },
+    {
+      "year": 2024,
+      "patents": 20000
+    }
+  ]
+}
