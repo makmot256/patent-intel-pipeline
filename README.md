@@ -1,5 +1,9 @@
 # Global Patent Intelligence Pipeline
 
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://patent-intel-pipeline.streamlit.app/)
+
+> **Live demo:** [patent-intel-pipeline.streamlit.app](https://patent-intel-pipeline.streamlit.app/)
+
 An end-to-end data-engineering project that turns raw USPTO
 PatentsView bulk data into a clean SQLite warehouse, publication-
 quality charts, three flavours of reports, and an interactive Plotly
@@ -228,7 +232,6 @@ No secrets or env vars needed.
 | `USE_CPC`                        | `False`         | Pull 495 MB, enable Q8/Q9 and CPC tab |
 | `BRAND` / `PALETTE`              | USPTO blues     | Dashboard + chart colours |
 
----
 
 ## Reproducibility
 
@@ -242,7 +245,6 @@ Same input → same output, every time:
 Anyone who clones the repo and runs `python -m src.run_all` gets
 byte-identical `data/processed/*.csv` and identical query results.
 
----
 
 ## Data attribution
 
