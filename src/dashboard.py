@@ -77,9 +77,66 @@ CUSTOM_CSS = f"""
     .pi-metric .value {{ color:{BRAND['dark']}; font-size: 1.9rem; font-weight: 700; margin-top: .2rem; }}
     .pi-metric .delta {{ color:{BRAND['accent']}; font-size: 0.85rem; margin-top: .2rem; }}
 
-    /* Tabs */
-    .stTabs [data-baseweb="tab-list"] {{ gap: 4px; }}
-    .stTabs [data-baseweb="tab"]      {{ font-weight: 600; }}
+    /* ----- Tabs: pill navigation ----- */
+    .stTabs {{ margin-top: .25rem; }}
+    .stTabs [data-baseweb="tab-list"] {{
+        gap: 6px;
+        background: #F3F5FA;
+        padding: 6px;
+        border-radius: 14px;
+        border: 1px solid #E5E7EB;
+        box-shadow: inset 0 1px 2px rgba(15,23,42,0.04);
+        overflow-x: auto;
+        scrollbar-width: thin;
+    }}
+    .stTabs [data-baseweb="tab-list"]::-webkit-scrollbar {{ height: 6px; }}
+    .stTabs [data-baseweb="tab-list"]::-webkit-scrollbar-thumb {{
+        background: #CBD5E1; border-radius: 3px;
+    }}
+    .stTabs [data-baseweb="tab"] {{
+        height: 42px !important;
+        padding: 0 18px !important;
+        border-radius: 10px !important;
+        background: white !important;
+        color: {BRAND['muted']} !important;
+        font-weight: 600 !important;
+        font-size: 0.95rem !important;
+        border: 1px solid #E5E7EB !important;
+        white-space: nowrap;
+        transition: all 160ms ease;
+        cursor: pointer;
+    }}
+    .stTabs [data-baseweb="tab"]:hover {{
+        background: #EAF0FF !important;
+        color: {BRAND['primary']} !important;
+        border-color: #C7D7FF !important;
+        transform: translateY(-1px);
+    }}
+    .stTabs [data-baseweb="tab"][aria-selected="true"] {{
+        background: linear-gradient(135deg, {BRAND['primary']} 0%, {BRAND['dark']} 100%) !important;
+        color: white !important;
+        border-color: transparent !important;
+        box-shadow: 0 6px 16px rgba(11,95,255,0.28);
+    }}
+    .stTabs [data-baseweb="tab"][aria-selected="true"]:hover {{
+        transform: translateY(-1px);
+    }}
+    /* Hide the default active-tab underline (we use a filled pill instead) */
+    .stTabs [data-baseweb="tab-highlight"],
+    .stTabs [data-baseweb="tab-border"] {{
+        display: none !important;
+    }}
+
+    /* Nav hint caption */
+    .pi-navhint {{
+        display: flex; align-items: center; gap: .5rem;
+        color: {BRAND['muted']}; font-size: .85rem;
+        margin: .25rem 0 .35rem 2px; letter-spacing: .02em;
+    }}
+    .pi-navhint .dot {{
+        width: 6px; height: 6px; border-radius: 50%;
+        background: {BRAND['primary']}; box-shadow: 0 0 0 4px rgba(11,95,255,0.12);
+    }}
 
     /* Dataframe tweak */
     .stDataFrame {{ border-radius: 12px; overflow: hidden; border: 1px solid #E5E7EB; }}
@@ -241,8 +298,25 @@ def _filter_year_trend(df: pd.DataFrame) -> pd.DataFrame:
 # ======================================================================
 # TABS
 # ======================================================================
+st.markdown(
+    """
+    <div class="pi-navhint">
+      <span class="dot"></span>
+      <span>Explore the dataset &mdash; click any tab below to switch views</span>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
 tab_overview, tab_inventors, tab_companies, tab_countries, tab_cpc, tab_queries = st.tabs(
-    ["Overview", "Inventors", "Companies", "Countries", "CPC Categories", "SQL Queries"]
+    [
+        "01 - Overview",
+        "02 - Inventors",
+        "03 - Companies",
+        "04 - Countries",
+        "05 - CPC Categories",
+        "06 - SQL Queries",
+    ]
 )
 
 # ---------- OVERVIEW ----------
