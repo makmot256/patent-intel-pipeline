@@ -26,6 +26,7 @@ if str(_PROJECT_ROOT) not in sys.path:
 import sqlite3
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
@@ -201,6 +202,34 @@ def load_patents_sample(limit: int = 500) -> pd.DataFrame:
         )
 
 
+@st.cache_data(show_spinner=False)
+def load_patents_text_sample(limit: int) -> pd.DataFrame:
+    """Small patent slice for TF-IDF (ORDER BY patent_id for fast, stable sampling)."""
+    with sqlite3.connect(DB_PATH) as conn:
+        df = pd.read_sql(
+            """
+            SELECT patent_id,
+                   COALESCE(title, '')    AS title,
+                   COALESCE(abstract, '') AS abstract,
+                   year
+            FROM patents
+            WHERE length(trim(COALESCE(title, '') || ' ' || COALESCE(abstract, ''))) > 4
+            ORDER BY patent_id
+            LIMIT ?
+            """,
+            conn,
+            params=(int(limit),),
+        )
+    if df.empty:
+        return df
+    df["text"] = (
+        df["title"].fillna("").str.strip()
+        + " "
+        + df["abstract"].fillna("").str.strip()
+    ).str.strip()
+    return df
+
+
 results, totals = load_results()
 
 
@@ -308,7 +337,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-tab_overview, tab_inventors, tab_companies, tab_countries, tab_cpc, tab_queries = st.tabs(
+tab_overview, tab_inventors, tab_companies, tab_countries, tab_cpc, tab_queries, tab_tfidf = st.tabs(
     [
         "01 - Overview",
         "02 - Inventors",
@@ -316,6 +345,7 @@ tab_overview, tab_inventors, tab_companies, tab_countries, tab_cpc, tab_queries 
         "04 - Countries",
         "05 - CPC Categories",
         "06 - SQL Queries",
+        "07 - TF-IDF Analysis",
     ]
 )
 
@@ -478,3 +508,113 @@ with tab_queries:
             st.code(sql, language="sql")
             if qname in results:
                 st.dataframe(results[qname], width="stretch", hide_index=True, height=260)
+
+# ---------- TF-IDF (sample corpus) ----------
+with tab_tfidf:
+    from sklearn.feature_extraction.text import TfidfVectorizer
+
+    st.markdown("##### TF-IDF on patent text (sample-only)")
+    st.caption(
+        "A **small subset** of patents is loaded from SQLite (cap below) so this stays fast. "
+        "Each document = **title + abstract** (many rows have an empty abstract in this dataset)."
+    )
+    st.latex(r"\mathrm{TF\text{-}IDF}(t,d) = \mathrm{TF}(t,d) \times \mathrm{IDF}(t)")
+    with st.expander("How to read this"):
+        st.markdown(
+            """
+            - **TF(*t*, *d*)** — term *t*'s frequency in document *d* (normalized within *d* in this implementation).
+            - **IDF(*t*)** — discounts terms that appear in almost every document; rare terms score higher.
+            - **Product** — words that are **strong in this patent** but **not boilerplate everywhere** rise to the top.
+            - We use **scikit-learn**'s smoothed TF-IDF with English **stop words** removed.
+            """
+        )
+
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        n_pat = st.slider("Patents in sample", 50, 400, 150, step=50, key="tfidf_patents")
+    with c2:
+        max_vocab = st.slider("Vocabulary cap", 40, 250, 120, step=10, key="tfidf_vocab")
+    with c3:
+        top_k_terms = st.slider("Top terms (charts / table)", 10, 40, 20, step=5, key="tfidf_topk")
+
+    df_txt = load_patents_text_sample(n_pat)
+    if df_txt.empty or len(df_txt) < 8:
+        st.warning("Not enough patent text rows for TF-IDF. Run the pipeline so `patents` has titles.")
+    else:
+        with st.spinner("Vectorizing sample…"):
+            vec = TfidfVectorizer(
+                max_features=max_vocab,
+                stop_words="english",
+                min_df=1,
+                max_df=0.92,
+                sublinear_tf=True,
+                token_pattern=r"(?u)\b[a-z][a-z0-9\-]{2,}\b",
+            )
+            X = vec.fit_transform(df_txt["text"])
+            feature_names = vec.get_feature_names_out()
+
+        st.caption(f"Using **{len(df_txt):,}** patents, **{X.shape[1]:,}** terms in vocabulary (sparse matrix).")
+
+        mean_tfidf = np.asarray(X.mean(axis=0)).ravel()
+        top_g = np.argsort(mean_tfidf)[::-1][:top_k_terms]
+        global_view = pd.DataFrame(
+            {"term": feature_names[top_g], "mean_tfidf": mean_tfidf[top_g]}
+        ).sort_values("mean_tfidf", ascending=True)
+
+        fig_g = px.bar(
+            global_view,
+            x="mean_tfidf",
+            y="term",
+            orientation="h",
+            title="Corpus-wide signal — highest mean TF-IDF (distinctive terms in this sample)",
+            labels={"mean_tfidf": "Mean TF-IDF", "term": ""},
+            color_discrete_sequence=[BRAND["primary"]],
+        )
+        fig_g.update_traces(marker_line_width=0)
+        st.plotly_chart(_style_fig(fig_g, height=max(380, top_k_terms * 22)), width="stretch")
+
+        st.markdown("##### Strongest terms for one patent")
+
+        def _row_label(row: pd.Series) -> str:
+            tid = row["patent_id"]
+            title = str(row["title"]).replace("\n", " ").strip()
+            if len(title) > 68:
+                title = title[:68] + "…"
+            return f"{tid}  |  {title}"
+
+        pick_i = st.selectbox(
+            "Select patent",
+            range(len(df_txt)),
+            format_func=lambda i: _row_label(df_txt.iloc[int(i)]),
+            key="tfidf_pick_patent",
+        )
+        row_vec = X[int(pick_i)].toarray().ravel()
+        nz = row_vec > 1e-9
+        if nz.any():
+            order = np.argsort(row_vec[nz])[::-1][:top_k_terms]
+            idx_active = np.flatnonzero(nz)[order]
+            doc_terms = pd.DataFrame(
+                {"term": feature_names[idx_active], "tfidf": row_vec[idx_active]}
+            )
+            left, right = st.columns([3, 2])
+            with left:
+                fig_d = px.bar(
+                    doc_terms.sort_values("tfidf"),
+                    x="tfidf",
+                    y="term",
+                    orientation="h",
+                    title="Top TF-IDF weights for selected patent",
+                    labels={"tfidf": "TF-IDF", "term": ""},
+                    color_discrete_sequence=[BRAND["accent"]],
+                )
+                fig_d.update_traces(marker_line_width=0)
+                st.plotly_chart(_style_fig(fig_d, height=max(360, top_k_terms * 20)), width="stretch")
+            with right:
+                st.dataframe(
+                    doc_terms.reset_index(drop=True),
+                    width="stretch",
+                    hide_index=True,
+                    height=max(320, top_k_terms * 28),
+                )
+        else:
+            st.info("No scored tokens for this row — title/abstract may be too short after cleaning.")
