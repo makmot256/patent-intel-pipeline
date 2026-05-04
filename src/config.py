@@ -46,7 +46,7 @@ USE_REAL_INVENTORS = False
 USE_REAL_COMPANIES = False
 # When True, downloads g_cpc_current.tsv.zip (495 MB) and enables the
 # CPC innovation-category reports and dashboard tab.
-USE_CPC = False
+USE_CPC = True
 
 # URLs are computed from the flags so `download.py` stays flag-driven.
 def _files() -> dict[str, str]:
