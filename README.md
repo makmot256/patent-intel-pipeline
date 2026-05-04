@@ -21,7 +21,8 @@ PatentsView bulk files → Python → pandas → SQLite → SQL → Reports / Ch
 - 6 CSV exports + one JSON summary in `reports/`
 - 4 publication-quality PNG charts in `reports/charts/`
 - A branded, interactive **Plotly dashboard** with KPI cards, filters,
-  a world map, tabs and a live SQL browser
+  a world map, tabs, a live SQL browser, and a **TF-IDF** text tab (sample patents)
+- **Live app:** same URL always — [patent-intel-pipeline.streamlit.app](https://patent-intel-pipeline.streamlit.app/) redeploys from `main`
 - One-command reproducibility: `python -m src.run_all`
 
 ---
