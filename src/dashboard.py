@@ -150,12 +150,34 @@ st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
 # Self-healing DB: if the .db file is missing (e.g. fresh Cloud
 # deployment), rebuild it from the committed clean_*.csv files.
 # ----------------------------------------------------------------------
+def _cpc_csv_ready() -> bool:
+    path = PROCESSED_DIR / "clean_patent_cpc.csv"
+    try:
+        return path.exists() and path.stat().st_size > 80
+    except OSError:
+        return False
+
+
+def _needs_db_rebuild() -> bool:
+    """True when SQLite is missing, corrupt, or out of sync with committed CPC CSV."""
+    if not DB_PATH.exists() or DB_PATH.stat().st_size == 0:
+        return True
+    try:
+        with sqlite3.connect(DB_PATH) as conn:
+            n_cpc = conn.execute("SELECT COUNT(*) FROM patent_cpc").fetchone()[0]
+    except sqlite3.Error:
+        return True
+    # Older runs built DB before CPC CSV was committed — heal automatically.
+    if n_cpc == 0 and _cpc_csv_ready():
+        return True
+    return False
+
+
 def _ensure_db() -> None:
-    if DB_PATH.exists() and DB_PATH.stat().st_size > 0:
+    if not _needs_db_rebuild():
         return
-    with st.spinner("First-run setup: building local database from processed CSVs..."):
+    with st.spinner("Building database from processed CSVs…"):
         from src import load
-        # Make sure all required CSVs exist before calling load
         required = ["clean_patents.csv", "clean_inventors.csv", "clean_companies.csv",
                     "clean_patent_inventor.csv", "clean_patent_company.csv"]
         for r in required:
@@ -172,11 +194,18 @@ def _ensure_db() -> None:
 _ensure_db()
 
 
+def _db_cache_signature() -> float:
+    try:
+        return DB_PATH.stat().st_mtime
+    except OSError:
+        return 0.0
+
+
 # ----------------------------------------------------------------------
 # Data loading (cached)
 # ----------------------------------------------------------------------
 @st.cache_data(show_spinner=False)
-def load_results():
+def load_results(db_mtime: float):
     results = run_all()
     with sqlite3.connect(DB_PATH) as conn:
         totals = {
@@ -230,7 +259,7 @@ def load_patents_text_sample(limit: int) -> pd.DataFrame:
     return df
 
 
-results, totals = load_results()
+results, totals = load_results(_db_cache_signature())
 
 
 # ----------------------------------------------------------------------
