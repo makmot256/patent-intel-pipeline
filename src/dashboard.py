@@ -334,7 +334,7 @@ with tab_overview:
             )
             fig.update_traces(line=dict(width=3.5), fillcolor="rgba(11,95,255,0.15)")
             fig.update_traces(mode="lines+markers", marker=dict(size=10, line=dict(width=2, color="white")))
-            st.plotly_chart(_style_fig(fig), use_container_width=True)
+            st.plotly_chart(_style_fig(fig), width="stretch")
 
     with right:
         q2 = results.get("Q2", pd.DataFrame()).head(top_n)
@@ -347,12 +347,12 @@ with tab_overview:
                 color_discrete_sequence=[BRAND["accent"]],
             )
             fig.update_traces(marker_line_width=0)
-            st.plotly_chart(_style_fig(fig, height=420), use_container_width=True)
+            st.plotly_chart(_style_fig(fig, height=420), width="stretch")
 
     # Recent patents sample
     st.markdown("##### Recent patents (sample)")
     recent = load_patents_sample(500)
-    st.dataframe(recent, use_container_width=True, height=280, hide_index=True)
+    st.dataframe(recent, width="stretch", height=280, hide_index=True)
 
 # ---------- INVENTORS ----------
 with tab_inventors:
@@ -368,10 +368,10 @@ with tab_inventors:
                 color_discrete_sequence=PALETTE,
             )
             fig.update_traces(marker_line_width=0)
-            st.plotly_chart(_style_fig(fig, height=520), use_container_width=True)
+            st.plotly_chart(_style_fig(fig, height=520), width="stretch")
         with c2:
             st.markdown("##### Full leaderboard")
-            st.dataframe(q1, use_container_width=True, hide_index=True, height=520)
+            st.dataframe(q1, width="stretch", hide_index=True, height=520)
 
     st.markdown("---")
     st.markdown("##### Q7 | Inventor rank within country (window fn)")
@@ -380,7 +380,7 @@ with tab_inventors:
         countries = ["(all)"] + sorted(q7["country"].unique().tolist())
         picked = st.selectbox("Filter country", countries, index=0)
         view = q7 if picked == "(all)" else q7[q7["country"] == picked]
-        st.dataframe(view, use_container_width=True, hide_index=True, height=360)
+        st.dataframe(view, width="stretch", hide_index=True, height=360)
 
 # ---------- COMPANIES ----------
 with tab_companies:
@@ -396,11 +396,11 @@ with tab_companies:
             color_discrete_sequence=[BRAND["primary"]],
         )
         fig.update_traces(marker_line_width=0)
-        st.plotly_chart(_style_fig(fig, height=520), use_container_width=True)
+        st.plotly_chart(_style_fig(fig, height=520), width="stretch")
 
     if not q6.empty:
         st.markdown("##### Q6 | Companies ranked by avg patents / year (CTE)")
-        st.dataframe(q6, use_container_width=True, hide_index=True, height=380)
+        st.dataframe(q6, width="stretch", hide_index=True, height=380)
 
 # ---------- COUNTRIES ----------
 with tab_countries:
@@ -417,7 +417,7 @@ with tab_countries:
         fig.update_geos(showframe=False, showcoastlines=True,
                         coastlinecolor="#E5E7EB", projection_type="natural earth",
                         bgcolor="white")
-        st.plotly_chart(_style_fig(fig, height=520), use_container_width=True)
+        st.plotly_chart(_style_fig(fig, height=520), width="stretch")
 
         c1, c2 = st.columns([3, 2])
         with c1:
@@ -429,11 +429,11 @@ with tab_countries:
                 labels={"patent_count": "Patents", "country": ""},
             )
             fig.update_traces(marker_line_width=0)
-            st.plotly_chart(_style_fig(fig, height=420), use_container_width=True)
+            st.plotly_chart(_style_fig(fig, height=420), width="stretch")
         with c2:
             st.markdown("##### Country leaderboard")
             st.dataframe(q3.drop(columns=["iso3"], errors="ignore"),
-                         use_container_width=True, hide_index=True, height=420)
+                         width="stretch", hide_index=True, height=420)
 
 # ---------- CPC CATEGORIES ----------
 with tab_cpc:
@@ -455,10 +455,10 @@ with tab_cpc:
                 color_discrete_sequence=PALETTE,
             )
             fig.update_traces(textinfo="percent+label")
-            st.plotly_chart(_style_fig(fig, height=480), use_container_width=True)
+            st.plotly_chart(_style_fig(fig, height=480), width="stretch")
         with c2:
             st.markdown("##### Section leaderboard")
-            st.dataframe(q8, use_container_width=True, hide_index=True, height=480)
+            st.dataframe(q8, width="stretch", hide_index=True, height=480)
 
         if not q9.empty:
             fig = px.line(
@@ -467,7 +467,7 @@ with tab_cpc:
                 color_discrete_sequence=PALETTE,
             )
             fig.update_traces(mode="lines+markers")
-            st.plotly_chart(_style_fig(fig, height=440), use_container_width=True)
+            st.plotly_chart(_style_fig(fig, height=440), width="stretch")
 
 # ---------- SQL QUERIES ----------
 with tab_queries:
@@ -477,4 +477,4 @@ with tab_queries:
         with st.expander(f"{qname} -- source SQL"):
             st.code(sql, language="sql")
             if qname in results:
-                st.dataframe(results[qname], use_container_width=True, hide_index=True, height=260)
+                st.dataframe(results[qname], width="stretch", hide_index=True, height=260)
